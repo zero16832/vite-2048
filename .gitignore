@@ -1,0 +1,52 @@
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Production
+dist
+build
+bin
+obj
+
+# Capacitor
+/android/app/build
+/android/.gradle
+/android/capacitor-cordova-android-plugins
+/ios/App/build
+/ios/App/Pods
+/ios/capacitor-cordova-ios-plugins
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+build_log.txt
+build_release_log.txt
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Android Keys (Keep private!)
+*.jks
+release.jks
