@@ -27,18 +27,21 @@ if %ERRORLEVEL% NEQ 0 (
             if "!repo_name!"=="" set "repo_name=2048-cute"
             
             echo [INFO] Creating repository on GitHub
-            gh repo create "!repo_name!" --public --source=. --remote=origin
+            gh repo create "!repo_name!" --public --source=. --remote=origin --push
             if %ERRORLEVEL% NEQ 0 (
                 echo [ERROR] Repository creation failed
                 pause
                 exit /b 1
             )
+            goto :success
         ) else (
+            echo IMPORTANT: Enter full URL like https://github.com/username/repo-name.git
             set /p "remote_url=Please enter your existing GitHub Repo URL: "
             git remote add origin !remote_url!
         )
     ) else (
         echo [WARNING] GitHub CLI gh not found
+        echo IMPORTANT: Enter full URL like https://github.com/username/repo-name.git
         set /p "remote_url=Please enter your GitHub Repo URL: "
         if "!remote_url!"=="" (
             echo [ERROR] URL cannot be empty
@@ -52,29 +55,36 @@ if %ERRORLEVEL% NEQ 0 (
 echo [INFO] Adding files
 git add .
 
+echo [INFO] Committing changes
 set /p "commit_msg=Enter commit message (default: Update 2048 Game): "
 if "!commit_msg!"=="" set "commit_msg=Update 2048 Game"
 
-echo [INFO] Committing changes
 git commit -m "!commit_msg!"
+REM If nothing to commit, that's fine, we proceed to push
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Commit failed. Please check if your git identity is set
-    echo Run: git config --global user.email "you@example.com"
-    echo Run: git config --global user.name "Your Name"
-    pause
-    exit /b 1
+    git status | findstr "nothing to commit" >nul
+    if %ERRORLEVEL% NEQ 0 (
+        echo [ERROR] Commit failed.
+        echo Please check if your git identity is set or if there's another error.
+        pause
+        exit /b 1
+    ) else (
+        echo [INFO] Nothing new to commit, proceeding to push.
+    )
 )
 
 echo [INFO] Pushing to GitHub
 git push -u origin main
 
 if %ERRORLEVEL% NEQ 0 (
-    echo [ERROR] Push failed
+    echo [ERROR] Push failed. 
+    echo Check if the URL is correct and you have permission.
 ) else (
+    :success
     echo ==========================================
     echo         SUCCESSFULLY PUSHED
     echo ==========================================
-    echo Your iOS Build should start shortly
+    echo Your iOS Build should start shortly on GitHub Actions.
 )
 
 pause
